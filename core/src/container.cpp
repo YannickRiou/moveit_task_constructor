@@ -120,6 +120,10 @@ void ContainerBasePrivate::copyState(Interface::iterator external, const Interfa
 
 void ContainerBasePrivate::liftSolution(const SolutionBasePtr& solution, const InterfaceState* internal_from,
                                         const InterfaceState* internal_to) {
+	solution->setCreator(me());
+
+	computeCost(*internal_from, *internal_to, *solution);
+
 	if (!storeSolution(solution))
 		return;
 
@@ -139,8 +143,8 @@ void ContainerBasePrivate::liftSolution(const SolutionBasePtr& solution, const I
 	InterfaceState* external_to = find_or_create_external(internal_to, created_to);
 
 	// connect solution to start/end state
-	solution->setStartState(*external_from);
-	solution->setEndState(*external_to);
+	solution->setStartStateUnsafe(*external_from);
+	solution->setEndStateUnsafe(*external_to);
 
 	// spawn created states in external interfaces
 	if (created_from)
@@ -200,20 +204,21 @@ bool ContainerBase::insert(Stage::pointer&& stage, int before) {
 	return true;
 }
 
-bool ContainerBasePrivate::remove(ContainerBasePrivate::const_iterator pos) {
+Stage::pointer ContainerBasePrivate::remove(ContainerBasePrivate::const_iterator pos) {
 	if (pos == children_.end())
-		return false;
+		return Stage::pointer();
 
 	(*pos)->pimpl()->unparent();
-	children_.erase(pos);
-	return true;
+	Stage::pointer result = std::move(*children_.erase(pos, pos));  // stage from non-const iterator to pos
+	children_.erase(pos);  // actually erase stage
+	return result;
 }
 
-bool ContainerBase::remove(int pos) {
+Stage::pointer ContainerBase::remove(int pos) {
 	return pimpl()->remove(pimpl()->childByIndex(pos, false));
 }
 
-bool ContainerBase::remove(Stage* child) {
+Stage::pointer ContainerBase::remove(Stage* child) {
 	auto it = pimpl()->children_.begin(), end = pimpl()->children_.end();
 	for (; it != end && it->get() != child; ++it)
 		;
@@ -292,7 +297,7 @@ struct SolutionCollector
 		// Traced path should not extend past container boundaries, i.e. trace.size() <= max_depth
 		// However, as the Merging-Connect's solution may be composed of several subsolutions, we need to disregard those
 		size_t len = trace.size();
-		const StagePrivate* prev_creator = nullptr;
+		const Stage* prev_creator = nullptr;
 		for (const auto& s : trace) {
 			if (s->creator() == prev_creator)
 				--len;
@@ -304,7 +309,7 @@ struct SolutionCollector
 		solutions.emplace_back(std::make_pair(trace, cost));
 	}
 
-	typedef std::list<std::pair<SolutionSequence::container_type, double>> SolutionCostPairs;
+	using SolutionCostPairs = std::list<std::pair<SolutionSequence::container_type, double>>;
 	SolutionCostPairs solutions;
 	const size_t max_depth;
 };
@@ -328,13 +333,13 @@ void updateStateCosts(const SolutionSequence::container_type& partial_solution_p
 
 void SerialContainer::onNewSolution(const SolutionBase& current) {
 	auto impl = pimpl();
-	const StagePrivate* creator = current.creator();
+	const Stage* creator = current.creator();
 	auto& children = impl->children();
 
 	// find number of stages before and after creator stage
 	size_t num_before = 0, num_after = 0;
 	for (auto it = children.begin(), end = children.end(); it != end; ++it, ++num_before)
-		if ((*it)->pimpl() == creator)
+		if (&(**it) == creator)
 			break;
 	assert(num_before < children.size());  // creator should be one of our children
 	num_after = children.size() - 1 - num_before;
@@ -370,7 +375,7 @@ void SerialContainer::onNewSolution(const SolutionBase& current) {
 				// insert outgoing solutions in normal order
 				solution.insert(solution.end(), out.first.begin(), out.first.end());
 				// store solution in sorted list
-				sorted.insert(std::make_shared<SolutionSequence>(std::move(solution), prio.cost(), impl));
+				sorted.insert(std::make_shared<SolutionSequence>(std::move(solution), prio.cost(), this));
 			} else if (prio.depth() > 1) {
 				// update state priorities along the whole partial solution path
 				updateStateCosts(in.first, prio);
@@ -473,7 +478,8 @@ void SerialContainerPrivate::resolveInterface(InterfaceFlags expected) {
 		exceptions.append(e);
 	}
 
-	required_interface_ = first.pimpl()->interfaceFlags() & START_IF_MASK | last.pimpl()->interfaceFlags() & END_IF_MASK;
+	required_interface_ = (first.pimpl()->interfaceFlags() & START_IF_MASK) |  // clang-format off
+	                      (last.pimpl()->interfaceFlags() & END_IF_MASK);  // clang-format off
 
 	if (exceptions)
 		throw exceptions;
@@ -551,17 +557,6 @@ void SerialContainer::traverse(const SolutionBase& start, const SolutionProcesso
 			trace_cost -= successor->cost();
 			trace.pop_back();
 		}
-}
-
-void WrappedSolution::fillMessage(moveit_task_constructor_msgs::Solution& solution,
-                                  Introspection* introspection) const {
-	wrapped_->fillMessage(solution, introspection);
-
-	// prepend this solutions info as a SubSolution msg
-	moveit_task_constructor_msgs::SubSolution sub_msg;
-	SolutionBase::fillInfo(sub_msg.info, introspection);
-	sub_msg.sub_solution_id.push_back(introspection ? introspection->solutionId(*wrapped_) : 0);
-	solution.sub_solution.insert(solution.sub_solution.begin(), std::move(sub_msg));
 }
 
 ParallelContainerBasePrivate::ParallelContainerBasePrivate(ParallelContainerBase* me, const std::string& name)
@@ -649,7 +644,7 @@ ParallelContainerBase::ParallelContainerBase(const std::string& name)
 
 void ParallelContainerBase::liftSolution(const SolutionBase& solution, double cost, std::string comment) {
 	auto impl = pimpl();
-	impl->liftSolution(std::make_shared<WrappedSolution>(impl, &solution, cost, std::move(comment)), solution.start(),
+	impl->liftSolution(std::make_shared<WrappedSolution>(this, &solution, cost, std::move(comment)), solution.start(),
 	                   solution.end());
 }
 
@@ -762,8 +757,8 @@ void Fallbacks::onNewSolution(const SolutionBase& s) {
 MergerPrivate::MergerPrivate(Merger* me, const std::string& name) : ParallelContainerBasePrivate(me, name) {}
 
 void MergerPrivate::resolveInterface(InterfaceFlags expected) {
-	ContainerBasePrivate::resolveInterface(expected);
-	switch (interfaceFlags()) {
+	ParallelContainerBasePrivate::resolveInterface(expected);
+	switch (requiredInterface()) {
 		case PROPAGATE_FORWARDS:
 		case PROPAGATE_BACKWARDS:
 		case UNKNOWN:
@@ -811,6 +806,9 @@ void Merger::compute() {
 }
 
 void Merger::onNewSolution(const SolutionBase& s) {
+	if (s.isFailure())  // ignore failure solutions
+		return;
+
 	auto impl = pimpl();
 	switch (impl->interfaceFlags()) {
 		case PROPAGATE_FORWARDS:
@@ -827,8 +825,8 @@ void Merger::onNewSolution(const SolutionBase& s) {
 
 void MergerPrivate::onNewPropagateSolution(const SolutionBase& s) {
 	const SubTrajectory* trajectory = dynamic_cast<const SubTrajectory*>(&s);
-	if (!trajectory) {
-		ROS_ERROR_NAMED("Merger", "Only simple trajectories are supported");
+	if (!trajectory || !trajectory->trajectory()) {
+		ROS_ERROR_NAMED("Merger", "Only simple, valid trajectories are supported");
 		return;
 	}
 
@@ -867,26 +865,28 @@ void MergerPrivate::onNewPropagateSolution(const SolutionBase& s) {
 void MergerPrivate::sendForward(SubTrajectory&& t, const InterfaceState* from) {
 	// generate target state
 	planning_scene::PlanningScenePtr to = from->scene()->diff();
-	to->setCurrentState(t.trajectory()->getLastWayPoint());
+	if (t.trajectory() && !t.trajectory()->empty())
+		to->setCurrentState(t.trajectory()->getLastWayPoint());
 	StagePrivate::sendForward(*from, InterfaceState(to), std::make_shared<SubTrajectory>(std::move(t)));
 }
 
 void MergerPrivate::sendBackward(SubTrajectory&& t, const InterfaceState* to) {
 	// generate target state
 	planning_scene::PlanningScenePtr from = to->scene()->diff();
-	from->setCurrentState(t.trajectory()->getFirstWayPoint());
+	if (t.trajectory() && !t.trajectory()->empty())
+		from->setCurrentState(t.trajectory()->getFirstWayPoint());
 	StagePrivate::sendBackward(InterfaceState(from), *to, std::make_shared<SubTrajectory>(std::move(t)));
 }
 
-void MergerPrivate::onNewGeneratorSolution(const SolutionBase& s) {
+void MergerPrivate::onNewGeneratorSolution(const SolutionBase& /* s */) {
 	// TODO: implement in similar fashion as onNewPropagateSolution(), but also merge start/end states
 }
 
 void MergerPrivate::mergeAnyCombination(const ChildSolutionMap& all_solutions, const SolutionBase& current,
                                         const planning_scene::PlanningSceneConstPtr& start_scene,
                                         const Spawner& spawner) {
-	std::vector<size_t> indeces;  // which solution index was considered last for i-th child?
-	indeces.reserve(children().size());
+	std::vector<size_t> indices;  // which solution index was considered last for i-th child?
+	indices.reserve(children().size());
 
 	ChildSolutionList sub_solutions;
 	sub_solutions.reserve(children().size());
@@ -894,8 +894,8 @@ void MergerPrivate::mergeAnyCombination(const ChildSolutionMap& all_solutions, c
 	// initialize vector of sub solutions
 	for (const auto& pair : all_solutions) {
 		// all children, except current solution's creator, start with zero index
-		indeces.push_back(pair.first != current.creator() ? 0 : pair.second.size() - 1);
-		sub_solutions.push_back(pair.second[indeces.back()]);
+		indices.push_back(pair.first != current.creator() ? 0 : pair.second.size() - 1);
+		sub_solutions.push_back(pair.second[indices.back()]);
 	}
 	while (true) {
 		merge(sub_solutions, start_scene, spawner);
@@ -905,13 +905,13 @@ void MergerPrivate::mergeAnyCombination(const ChildSolutionMap& all_solutions, c
 		for (auto it = all_solutions.cbegin(), end = all_solutions.cend(); it != end; ++it, ++child) {
 			if (it->first == current.creator())
 				continue;  // skip current solution's child
-			if (++indeces[child] >= it->second.size()) {
-				indeces[child] = 0;  // start over with zero
-				sub_solutions[child] = it->second[indeces[child]];
+			if (++indices[child] >= it->second.size()) {
+				indices[child] = 0;  // start over with zero
+				sub_solutions[child] = it->second[indices[child]];
 				continue;  // and continue with next child
 			}
 			// otherwise, a new solution combination is available
-			sub_solutions[child] = it->second[indeces[child]];
+			sub_solutions[child] = it->second[indices[child]];
 			break;
 		}
 		if (child == children().size())  // all combinations exhausted?
@@ -924,39 +924,46 @@ void MergerPrivate::merge(const ChildSolutionList& sub_solutions,
 	// transform vector of SubTrajectories into vector of RobotTrajectories
 	std::vector<robot_trajectory::RobotTrajectoryConstPtr> sub_trajectories;
 	sub_trajectories.reserve(sub_solutions.size());
-	for (const auto& sub : sub_solutions) {
-		// TODO: directly skip failures in mergeAnyCombination() or even earlier
-		if (sub->isFailure())
-			return;
-		if (sub->trajectory())
-			sub_trajectories.push_back(sub->trajectory());
-	}
+	for (const auto& sub : sub_solutions)
+		sub_trajectories.push_back(sub->trajectory());
 
 	moveit::core::JointModelGroup* jmg = jmg_merged_.get();
 	robot_trajectory::RobotTrajectoryPtr merged;
 	try {
 		merged = task_constructor::merge(sub_trajectories, start_scene->getCurrentState(), jmg);
 	} catch (const std::runtime_error& e) {
-		ROS_INFO_STREAM_NAMED("Merger", this->name() << "Merging failed: " << e.what());
+		SubTrajectory t;
+		t.markAsFailure();
+		t.setComment(e.what());
+		spawner(std::move(t));
 		return;
 	}
 	if (jmg_merged_.get() != jmg)
 		jmg_merged_.reset(jmg);
-	if (!merged)
-		return;
+
+	assert(merged);
+	SubTrajectory t(merged);
 
 	// check merged trajectory for collisions
-	if (!start_scene->isPathValid(*merged))
-		return;
-
-	SubTrajectory t(merged);
-	// accumulate costs and markers
-	double costs = 0.0;
-	for (const auto& sub : sub_solutions) {
-		costs += sub->cost();
-		t.markers().insert(t.markers().end(), sub->markers().begin(), sub->markers().end());
+	std::vector<std::size_t> invalid_index;
+	if (!start_scene->isPathValid(*merged, "", true, &invalid_index)) {
+		t.markAsFailure();
+		std::ostringstream oss;
+		oss << "Invalid waypoint(s): ";
+		if (invalid_index.size() == merged->getWayPointCount())
+			oss << "all";
+		else for (size_t i : invalid_index)
+			oss << i << ", ";
+		t.setComment(oss.str());
+	} else {
+		// accumulate costs and markers
+		double costs = 0.0;
+		for (const auto& sub : sub_solutions) {
+			costs += sub->cost();
+			t.markers().insert(t.markers().end(), sub->markers().begin(), sub->markers().end());
+		}
+		t.setCost(costs);
 	}
-	t.setCost(costs);
 	spawner(std::move(t));
 }
 }  // namespace task_constructor

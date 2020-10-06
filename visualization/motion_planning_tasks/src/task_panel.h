@@ -47,8 +47,9 @@ class QIcon;
 namespace rviz {
 class WindowManagerInterface;
 class Property;
+class BoolProperty;
 class EnumProperty;
-}
+}  // namespace rviz
 
 namespace moveit_rviz_plugin {
 
@@ -107,7 +108,7 @@ class MetaTaskListModel;
  *  Subscribing to task_monitoring and task_solution topics, it collects information
  *  about running tasks and their solutions and allows to inspect both,
  *  successful solutions and failed solution attempts.
-*/
+ */
 class TaskViewPrivate;
 class TaskView : public SubPanel
 {
@@ -125,6 +126,8 @@ protected:
 	};
 	rviz::EnumProperty* initial_task_expand;
 
+	rviz::BoolProperty* show_time_column;
+
 public:
 	TaskView(TaskPanel* parent, rviz::Property* root);
 	~TaskView() override;
@@ -141,6 +144,7 @@ protected Q_SLOTS:
 	void onCurrentSolutionChanged(const QModelIndex& current, const QModelIndex& previous);
 	void onSolutionSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 	void onExecCurrentSolution() const;
+	void onShowTimeChanged();
 };
 
 class GlobalSettingsWidgetPrivate;

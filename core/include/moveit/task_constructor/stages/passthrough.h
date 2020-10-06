@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Bielefeld University
+ *  Copyright (c) 2020, Hamburg University
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Bielefeld University nor the names of its
+ *   * Neither the name of the copyright holders nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,33 +31,31 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
-
-/* Authors: Robert Haschke
-   Desc:    type traits for SFINAE-based templating
-*/
+/* Authors: Michael 'v4hn' Goerner */
 
 #pragma once
 
-#include <type_traits>
+#include <moveit/task_constructor/container.h>
+#include <moveit/task_constructor/cost_queue.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <Eigen/Geometry>
 
 namespace moveit {
 namespace task_constructor {
+namespace stages {
 
-// detect STL-like containers by presence of cbegin(), cend() methods
-template <typename T, typename _ = void>
-struct is_container : std::false_type
-{};
+/** Generic Wrapper that passes on a solution
+ *
+ * Useful to set a custom CostTransform via Stage::setCostTerm
+ * to change a solution's cost without loosing the original value
+ */
+class PassThrough : public WrapperBase
+{
+public:
+	PassThrough(const std::string& name = "PassThrough", Stage::pointer&& child = Stage::pointer());
 
-template <typename... Ts>
-struct is_container_helper
-{};
-
-template <typename T>
-struct is_container<
-    T, std::conditional_t<false,
-                          is_container_helper<typename T::const_iterator, decltype(std::declval<T>().cbegin()),
-                                              decltype(std::declval<T>().cend())>,
-                          void> > : public std::true_type
-{};
+	void onNewSolution(const SolutionBase& s) override;
+};
+}  // namespace stages
 }  // namespace task_constructor
 }  // namespace moveit

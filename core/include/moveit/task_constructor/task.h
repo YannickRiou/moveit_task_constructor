@@ -52,8 +52,8 @@ namespace moveit {
 namespace core {
 MOVEIT_CLASS_FORWARD(RobotModel)
 MOVEIT_CLASS_FORWARD(RobotState)
-}
-}
+}  // namespace core
+}  // namespace moveit
 
 namespace moveit {
 namespace task_constructor {
@@ -78,7 +78,7 @@ public:
 	createPlanner(const moveit::core::RobotModelConstPtr& model, const std::string& ns = "move_group",
 	              const std::string& planning_plugin_param_name = "planning_plugin",
 	              const std::string& adapter_plugins_param_name = "request_adapters");
-	Task(const std::string& id = "",
+	Task(const std::string& id = "", bool introspection = true,
 	     ContainerBase::pointer&& container = std::make_unique<SerialContainer>("task pipeline"));
 	Task(Task&& other);  // NOLINT(performance-noexcept-move-constructor)
 	Task& operator=(Task&& other);  // NOLINT(performance-noexcept-move-constructor)
@@ -100,7 +100,7 @@ public:
 	void enableIntrospection(bool enable = true);
 	Introspection& introspection();
 
-	typedef std::function<void(const Task& t)> TaskCallback;
+	using TaskCallback = std::function<void(const Task& t)>;
 	using TaskCallbackList = std::list<TaskCallback>;
 	/// add function to be called after each top-level iteration
 	TaskCallbackList::const_iterator addTaskCallback(TaskCallback&& cb);
@@ -108,9 +108,9 @@ public:
 	void eraseTaskCallback(TaskCallbackList::const_iterator which);
 
 	/// expose SolutionCallback API
-	using WrapperBase::SolutionCallback;
 	using WrapperBase::addSolutionCallback;
 	using WrapperBase::removeSolutionCallback;
+	using WrapperBase::SolutionCallback;
 
 	/// reset all stages
 	void reset() final;

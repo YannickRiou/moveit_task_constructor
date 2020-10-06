@@ -65,7 +65,6 @@ namespace task_constructor {
 class SolutionBase;
 MOVEIT_CLASS_FORWARD(InterfaceState)
 MOVEIT_CLASS_FORWARD(Interface)
-typedef std::weak_ptr<Interface> InterfaceWeakPtr;
 MOVEIT_CLASS_FORWARD(Stage)
 MOVEIT_CLASS_FORWARD(Introspection)
 
@@ -100,6 +99,9 @@ public:
 	/// create an InterfaceState from a planning scene
 	InterfaceState(const planning_scene::PlanningScenePtr& ps);
 	InterfaceState(const planning_scene::PlanningSceneConstPtr& ps);
+
+	/// provide an initial priority for the state (for internal use only)
+	InterfaceState(const planning_scene::PlanningSceneConstPtr& ps, const Priority& p);
 
 	/// copy an existing InterfaceState, but not including incoming/outgoing trajectories
 	InterfaceState(const InterfaceState& other);
@@ -183,17 +185,22 @@ private:
 
 	// restrict access to some functions to ensure consistency
 	// (we need to set/unset InterfaceState::owner_)
-	using base_type::moveTo;
-	using base_type::moveFrom;
-	using base_type::insert;
 	using base_type::erase;
+	using base_type::insert;
+	using base_type::moveFrom;
+	using base_type::moveTo;
 	using base_type::remove_if;
 };
 
+class CostTerm;
 class StagePrivate;
+class ContainerBasePrivate;
 /// abstract base class for solutions (primitive and sequences)
 class SolutionBase
 {
+	friend StagePrivate;  // for set[Start|End]StateUnsafe
+	friend ContainerBasePrivate;
+
 public:
 	virtual ~SolutionBase() = default;
 
@@ -204,22 +211,26 @@ public:
 	template <Interface::Direction dir>
 	inline const InterfaceState::Solutions& trajectories() const;
 
+	/** set the solution's start_state_
+	 *
+	 * Must not be used with different states because it registers the solution with the state as well.
+	 */
 	inline void setStartState(const InterfaceState& state) {
-		// only allow setting once (by Stage)
 		assert(start_ == nullptr || start_ == &state);
-		start_ = &state;
-		const_cast<InterfaceState&>(state).addOutgoing(this);
+		setStartStateUnsafe(state);
 	}
 
+	/** set the solution's end_state_
+	 *
+	 * Must not be used with different states because it registers the solution with the state as well.
+	 */
 	inline void setEndState(const InterfaceState& state) {
-		// only allow setting once (by Stage)
 		assert(end_ == nullptr || end_ == &state);
-		end_ = &state;
-		const_cast<InterfaceState&>(state).addIncoming(this);
+		setEndStateUnsafe(state);
 	}
 
-	inline const StagePrivate* creator() const { return creator_; }
-	void setCreator(StagePrivate* creator);
+	inline const Stage* creator() const { return creator_; }
+	void setCreator(Stage* creator);
 
 	inline double cost() const { return cost_; }
 	void setCost(double cost);
@@ -237,16 +248,31 @@ public:
 	                         Introspection* introspection = nullptr) const = 0;
 	void fillInfo(moveit_task_constructor_msgs::SolutionInfo& info, Introspection* introspection = nullptr) const;
 
+	/// required to dispatch to type-specific CostTerm methods via vtable
+	virtual double computeCost(const CostTerm& cost, std::string& comment) const = 0;
+
 	/// order solutions by their cost
 	bool operator<(const SolutionBase& other) const { return this->cost_ < other.cost_; }
 
 protected:
-	SolutionBase(StagePrivate* creator = nullptr, double cost = 0.0, std::string comment = "")
+	SolutionBase(Stage* creator = nullptr, double cost = 0.0, std::string comment = "")
 	  : creator_(creator), cost_(cost), comment_(std::move(comment)) {}
+
+	/** unsafe setter for start_state_
+	 *
+	 * must only be used if the previously set state removes its link to this solution
+	 */
+	void setStartStateUnsafe(const InterfaceState& state);
+
+	/** unsafe setter for end_state_
+	 *
+	 * must only be used if the previously set state removes its link to this solution
+	 */
+	void setEndStateUnsafe(const InterfaceState& state);
 
 private:
 	// back-pointer to creating stage, allows to access sub-solutions
-	StagePrivate* creator_;
+	Stage* creator_;
 	// associated cost
 	double cost_;
 	// comment for this solution, e.g. explanation of failure
@@ -274,6 +300,8 @@ public:
 
 	void fillMessage(moveit_task_constructor_msgs::Solution& msg, Introspection* introspection = nullptr) const override;
 
+	double computeCost(const CostTerm& cost, std::string& comment) const override;
+
 private:
 	// actual trajectory, might be empty
 	robot_trajectory::RobotTrajectoryConstPtr trajectory_;
@@ -291,13 +319,15 @@ public:
 	using container_type = std::vector<const SolutionBase*>;
 
 	explicit SolutionSequence() : SolutionBase() {}
-	SolutionSequence(container_type&& subsolutions, double cost = 0.0, StagePrivate* creator = nullptr)
+	SolutionSequence(container_type&& subsolutions, double cost = 0.0, Stage* creator = nullptr)
 	  : SolutionBase(creator, cost), subsolutions_(std::move(subsolutions)) {}
 
 	void push_back(const SolutionBase& solution);
 
 	/// append all subsolutions to solution
 	void fillMessage(moveit_task_constructor_msgs::Solution& msg, Introspection* introspection) const override;
+
+	double computeCost(const CostTerm& cost, std::string& comment) const override;
 
 	const container_type& solutions() const { return subsolutions_; }
 
@@ -309,6 +339,33 @@ private:
 	container_type subsolutions_;
 };
 MOVEIT_CLASS_FORWARD(SolutionSequence)
+
+/** Wrap an existing solution
+ *
+ * used by parallel containers and wrappers.
+ *
+ * This essentially wraps a solution of a child and thus allows
+ * for new clones of start / end states, which in turn will
+ * have separate incoming/outgoing trajectories */
+class WrappedSolution : public SolutionBase
+{
+public:
+	explicit WrappedSolution(Stage* creator, const SolutionBase* wrapped, double cost, std::string comment)
+	  : SolutionBase(creator, cost, std::move(comment)), wrapped_(wrapped) {}
+	explicit WrappedSolution(Stage* creator, const SolutionBase* wrapped, double cost)
+	  : SolutionBase(creator, cost), wrapped_(wrapped) {}
+	explicit WrappedSolution(Stage* creator, const SolutionBase* wrapped)
+	  : WrappedSolution(creator, wrapped, wrapped->cost()) {}
+	void fillMessage(moveit_task_constructor_msgs::Solution& solution,
+	                 Introspection* introspection = nullptr) const override;
+
+	double computeCost(const CostTerm& cost, std::string& comment) const override;
+
+	const SolutionBase* wrapped() const { return wrapped_; }
+
+private:
+	const SolutionBase* wrapped_;
+};
 
 template <>
 inline const InterfaceState::Solutions& SolutionBase::trajectories<Interface::FORWARD>() const {
@@ -330,4 +387,4 @@ struct less<moveit::task_constructor::SolutionBase*>
 		return *x < *y;
 	}
 };
-}
+}  // namespace std

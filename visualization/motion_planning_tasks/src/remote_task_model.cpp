@@ -60,7 +60,7 @@ enum NodeFlag
 	WAS_VISITED = 0x01,  // indicate that model should emit change notifications
 	NAME_CHANGED = 0x02,  // indicate that name was manually changed
 };
-typedef QFlags<NodeFlag> NodeFlags;
+using NodeFlags = QFlags<NodeFlag>;
 
 struct RemoteTaskModel::Node
 {
@@ -232,13 +232,6 @@ QModelIndex RemoteTaskModel::parent(const QModelIndex& child) const {
 	return this->index(p);
 }
 
-Qt::ItemFlags RemoteTaskModel::flags(const QModelIndex& index) const {
-	Qt::ItemFlags flags = BaseTaskModel::flags(index);
-	if (index.column() == 0)
-		flags |= Qt::ItemIsEditable;  // name is editable
-	return flags;
-}
-
 QVariant RemoteTaskModel::data(const QModelIndex& index, int role) const {
 	Node* n = node(index);
 	if (!n)
@@ -360,7 +353,7 @@ void RemoteTaskModel::processStageStatistics(const moveit_task_constructor_msgs:
 		// emit notify about model changes when node was already visited
 		if (n->node_flags_ & WAS_VISITED) {
 			QModelIndex idx = index(n);
-			dataChanged(idx.sibling(idx.row(), 1), idx.sibling(idx.row(), 2));
+			dataChanged(idx.sibling(idx.row(), 1), idx.sibling(idx.row(), 3));
 		}
 	}
 }
@@ -495,7 +488,7 @@ QVariant RemoteSolutionModel::headerData(int section, Qt::Orientation orientatio
 						return tr("comment");
 				}
 			case Qt::TextAlignmentRole:
-				return section == 2 ? Qt::AlignLeft : Qt::AlignRight;
+				return Qt::AlignLeft;
 		}
 	}
 	return QAbstractItemModel::headerData(section, orientation, role);
@@ -509,8 +502,10 @@ QVariant RemoteSolutionModel::data(const QModelIndex& index, int role) const {
 
 	switch (role) {
 		case Qt::UserRole:
-		case Qt::ToolTipRole:
 			return item.id;
+
+		case Qt::ToolTipRole:
+			return item.comment;
 
 		case Qt::DisplayRole:
 			switch (index.column()) {
@@ -601,7 +596,7 @@ void RemoteSolutionModel::sortInternal() {
 			          if (comp == 0)  // if still undecided, id decides
 				          comp = (left->id < right->id ? -1 : 1);
 			          return (sort_order_ == Qt::AscendingOrder) ? (comp < 0) : (comp >= 0);
-			       });
+		          });
 	}
 
 	// map old indexes to new ones
@@ -645,7 +640,8 @@ void RemoteSolutionModel::processSolutionIDs(const std::vector<uint32_t>& succes
 }
 
 void RemoteSolutionModel::processSolutionIDs(const std::vector<uint32_t>& ids, bool successful) {
-	// ids are ordered by cost, insert them into data_ list sorted by id
+	// Interface axiom: ids are sorted by cost
+	// insert them into data_ list sorted by id
 	double default_cost =
 	    successful ? std::numeric_limits<double>::quiet_NaN() : std::numeric_limits<double>::infinity();
 	uint32_t cost_rank = 0;

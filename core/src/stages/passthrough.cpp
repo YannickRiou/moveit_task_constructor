@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Bielefeld University
+ *  Copyright (c) 2020, Hamburg University
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Bielefeld University nor the names of its
+ *   * Neither the name of the copyright holders nor the names of their
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,33 +31,35 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
+/* Author: Michael 'v4hn' Goerner */
 
-/* Authors: Robert Haschke
-   Desc:    type traits for SFINAE-based templating
-*/
+#include <moveit/task_constructor/stages/passthrough.h>
+#include <moveit/task_constructor/storage.h>
+#include <moveit/task_constructor/marker_tools.h>
 
-#pragma once
+#include <moveit/task_constructor/container_p.h>
 
-#include <type_traits>
+#include <moveit/planning_scene/planning_scene.h>
+#include <moveit/robot_state/conversions.h>
+#include <moveit/robot_state/robot_state.h>
+
+#include <Eigen/Geometry>
+#include <eigen_conversions/eigen_msg.h>
+#include <chrono>
+#include <functional>
+#include <iterator>
+#include <ros/console.h>
 
 namespace moveit {
 namespace task_constructor {
+namespace stages {
 
-// detect STL-like containers by presence of cbegin(), cend() methods
-template <typename T, typename _ = void>
-struct is_container : std::false_type
-{};
+PassThrough::PassThrough(const std::string& name, Stage::pointer&& child) : WrapperBase(name, std::move(child)) {}
 
-template <typename... Ts>
-struct is_container_helper
-{};
+void PassThrough::onNewSolution(const SolutionBase& s) {
+	this->liftSolution(s);
+}
 
-template <typename T>
-struct is_container<
-    T, std::conditional_t<false,
-                          is_container_helper<typename T::const_iterator, decltype(std::declval<T>().cbegin()),
-                                              decltype(std::declval<T>().cend())>,
-                          void> > : public std::true_type
-{};
+}  // namespace stages
 }  // namespace task_constructor
 }  // namespace moveit

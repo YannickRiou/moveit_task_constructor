@@ -40,6 +40,8 @@
 
 #include <moveit/task_constructor/storage.h>
 #include <moveit/planning_scene/planning_scene.h>
+#include <moveit/task_constructor/cost_terms.h>
+
 #include <rviz_marker_tools/marker_creation.h>
 #include <Eigen/Geometry>
 #include <eigen_conversions/eigen_msg.h>
@@ -53,6 +55,9 @@ namespace task_constructor {
 namespace stages {
 
 FixCollisionObjects::FixCollisionObjects(const std::string& name) : PropagatingEitherWay(name) {
+	// TODO: possibly weight solutions based on the required displacement?
+	setCostTerm(std::make_unique<cost::Constant>(0.0));
+
 	auto& p = properties();
 	p.declare<double>("max_penetration", "maximally corrected penetration depth");
 	p.declare<geometry_msgs::Vector3>("direction", "direction vector to use for corrections");
@@ -72,8 +77,8 @@ bool computeCorrection(const std::vector<cd::Contact>& contacts, Eigen::Vector3d
 	correction.setZero();
 	for (const cd::Contact& c : contacts) {
 		if ((c.body_type_1 != cd::BodyTypes::WORLD_OBJECT && c.body_type_2 != cd::BodyTypes::WORLD_OBJECT)) {
-			ROS_WARN_STREAM_NAMED("FixCollisionObjects", "Cannot fix collision between " << c.body_name_1 << " and "
-			                                                                             << c.body_name_2);
+			ROS_WARN_STREAM_NAMED("FixCollisionObjects",
+			                      "Cannot fix collision between " << c.body_name_1 << " and " << c.body_name_2);
 			return false;
 		}
 		if (c.body_type_1 == cd::BodyTypes::WORLD_OBJECT)

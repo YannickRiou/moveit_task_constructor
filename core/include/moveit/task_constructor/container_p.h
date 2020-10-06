@@ -49,8 +49,8 @@ namespace moveit {
 namespace core {
 MOVEIT_CLASS_FORWARD(JointModelGroup)
 MOVEIT_CLASS_FORWARD(RobotState)
-}
-}
+}  // namespace core
+}  // namespace moveit
 
 namespace moveit {
 namespace task_constructor {
@@ -89,7 +89,7 @@ public:
 	const_iterator childByIndex(int index, bool for_insert = false) const;
 
 	/// remove child at given iterator position, returns fals if pos is invalid
-	bool remove(ContainerBasePrivate::const_iterator pos);
+	Stage::pointer remove(ContainerBasePrivate::const_iterator pos);
 
 	/// traversing all stages up to max_depth
 	bool traverseStages(const ContainerBase::StageCallback& processor, unsigned int cur_depth,
@@ -187,27 +187,6 @@ protected:
 };
 PIMPL_FUNCTIONS(SerialContainer)
 
-/** Wrap an existing solution - for use in parallel containers and wrappers.
- *
- * This essentially wraps a solution of a child and thus allows
- * for new clones of start / end states, which in turn will
- * have separate incoming/outgoing trajectories */
-class WrappedSolution : public SolutionBase
-{
-public:
-	explicit WrappedSolution(StagePrivate* creator, const SolutionBase* wrapped, double cost, std::string comment)
-	  : SolutionBase(creator, cost, std::move(comment)), wrapped_(wrapped) {}
-	explicit WrappedSolution(StagePrivate* creator, const SolutionBase* wrapped, double cost)
-	  : SolutionBase(creator, cost), wrapped_(wrapped) {}
-	explicit WrappedSolution(StagePrivate* creator, const SolutionBase* wrapped)
-	  : WrappedSolution(creator, wrapped, wrapped->cost()) {}
-	void fillMessage(moveit_task_constructor_msgs::Solution& solution,
-	                 Introspection* introspection = nullptr) const override;
-
-private:
-	const SolutionBase* wrapped_;
-};
-
 class ParallelContainerBasePrivate : public ContainerBasePrivate
 {
 	friend class ParallelContainerBase;
@@ -244,7 +223,7 @@ class MergerPrivate : public ParallelContainerBasePrivate
 
 	moveit::core::JointModelGroupPtr jmg_merged_;
 	using ChildSolutionList = std::vector<const SubTrajectory*>;
-	using ChildSolutionMap = std::map<const StagePrivate*, ChildSolutionList>;
+	using ChildSolutionMap = std::map<const Stage*, ChildSolutionList>;
 	// map from external source state (iterator) to all corresponding children's solutions
 	std::map<InterfaceState*, ChildSolutionMap> source_state_to_solutions_;
 

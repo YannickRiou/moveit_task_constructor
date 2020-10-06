@@ -104,7 +104,7 @@ const ContainerBase* TaskPrivate::stages() const {
 	return children().empty() ? nullptr : static_cast<ContainerBase*>(children().front().get());
 }
 
-Task::Task(const std::string& id, ContainerBase::pointer&& container)
+Task::Task(const std::string& id, bool introspection, ContainerBase::pointer&& container)
   : WrapperBase(new TaskPrivate(this, id), std::move(container)) {
 	if (!id.empty())
 		stages()->setName(id);
@@ -112,12 +112,12 @@ Task::Task(const std::string& id, ContainerBase::pointer&& container)
 	// monitor state on commandline
 	// addTaskCallback(std::bind(&Task::printState, this, std::ref(std::cout)));
 	// enable introspection by default, but only if ros::init() was called
-	if (ros::isInitialized())
+	if (ros::isInitialized() && introspection)
 		enableIntrospection(true);
 }
 
 Task::Task(Task&& other)  // NOLINT(performance-noexcept-move-constructor)
-    : WrapperBase(new TaskPrivate(this, std::string()), std::make_unique<SerialContainer>()) {
+  : WrapperBase(new TaskPrivate(this, std::string()), std::make_unique<SerialContainer>()) {
 	*this = std::move(other);
 }
 
@@ -129,7 +129,7 @@ Task& Task::operator=(Task&& other) {  // NOLINT(performance-noexcept-move-const
 
 struct PlannerCache
 {
-	typedef std::tuple<std::string, std::string, std::string> PlannerID;
+	using PlannerID = std::tuple<std::string, std::string, std::string>;
 	using PlannerMap = std::map<PlannerID, std::weak_ptr<planning_pipeline::PlanningPipeline> >;
 	using ModelList = std::list<std::pair<std::weak_ptr<const robot_model::RobotModel>, PlannerMap> >;
 	ModelList cache_;
@@ -218,12 +218,12 @@ void Task::enableIntrospection(bool enable) {
 		impl->introspection_.reset(new Introspection(impl));
 	else if (!enable && impl->introspection_) {
 		// reset introspection instance of all stages
-		pimpl()->setIntrospection(nullptr);
-		pimpl()->traverseStages(
+		impl->setIntrospection(nullptr);
+		impl->traverseStages(
 		    [](Stage& stage, int /*depth*/) {
 			    stage.pimpl()->setIntrospection(nullptr);
 			    return true;
-			 },
+		    },
 		    1, UINT_MAX);
 		impl->introspection_.reset();
 	}
@@ -275,7 +275,7 @@ void Task::init() {
 	    [impl](Stage& stage, int /*depth*/) {
 		    stage.pimpl()->setIntrospection(impl->introspection_.get());
 		    return true;
-		 },
+	    },
 	    1, UINT_MAX);
 
 	// first time publish task

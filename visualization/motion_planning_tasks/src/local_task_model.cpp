@@ -79,7 +79,7 @@ QModelIndex LocalTaskModel::index(Node* n) const {
 
 LocalTaskModel::LocalTaskModel(ContainerBase::pointer&& container, const planning_scene::PlanningSceneConstPtr& scene,
                                rviz::DisplayContext* display_context, QObject* parent)
-  : BaseTaskModel(scene, display_context, parent), Task("", std::move(container)) {
+  : BaseTaskModel(scene, display_context, parent), Task("", true, std::move(container)) {
 	root_ = this;
 	flags_ |= LOCAL_MODEL;
 }
@@ -134,6 +134,8 @@ Qt::ItemFlags LocalTaskModel::flags(const QModelIndex& index) const {
 	// dropping into containers is enabled
 	if (c && stage_factory_)
 		flags |= Qt::ItemIsDropEnabled;
+	if (index.column() == 0)
+		flags |= Qt::ItemIsEditable;  // name is editable
 	return flags;
 }
 

@@ -37,6 +37,8 @@
 */
 
 #include <moveit/task_constructor/stages/move_to.h>
+#include <moveit/task_constructor/cost_terms.h>
+
 #include <moveit/planning_scene/planning_scene.h>
 #include <rviz_marker_tools/marker_creation.h>
 #include <eigen_conversions/eigen_msg.h>
@@ -48,6 +50,8 @@ namespace stages {
 
 MoveTo::MoveTo(const std::string& name, const solvers::PlannerInterfacePtr& planner)
   : PropagatingEitherWay(name), planner_(planner) {
+	setCostTerm(std::make_unique<cost::PathLength>());
+
 	auto& p = properties();
 	p.property("timeout").setDefaultValue(1.0);
 	p.declare<std::string>("group", "name of planning group");
@@ -120,12 +124,26 @@ bool MoveTo::getJointStateGoal(const boost::any& goal, const moveit::core::Joint
 	} catch (const boost::bad_any_cast&) {
 	}
 
+	try {
+		const std::map<std::string, double>& joint_map = boost::any_cast<std::map<std::string, double>>(goal);
+		const auto& accepted = jmg->getJointModelNames();
+		for (const auto& joint : joint_map) {
+			if (std::find(accepted.begin(), accepted.end(), joint.first) == accepted.end())
+				throw InitStageException(*this,
+				                         "Joint '" + joint.first + "' is not part of group '" + jmg->getName() + "'");
+			state.setVariablePosition(joint.first, joint.second);
+		}
+		state.update();
+		return true;
+	} catch (const boost::bad_any_cast&) {
+	}
+
 	return false;
 }
 
 bool MoveTo::getPoseGoal(const boost::any& goal, const geometry_msgs::PoseStamped& ik_pose_msg,
                          const planning_scene::PlanningScenePtr& scene, Eigen::Isometry3d& target_eigen,
-                         decltype(std::declval<SolutionBase>().markers()) & markers) {
+                         decltype(std::declval<SolutionBase>().markers())& markers) {
 	try {
 		const geometry_msgs::PoseStamped& target = boost::any_cast<geometry_msgs::PoseStamped>(goal);
 		tf::poseMsgToEigen(target.pose, target_eigen);
@@ -147,7 +165,7 @@ bool MoveTo::getPoseGoal(const boost::any& goal, const geometry_msgs::PoseStampe
 
 bool MoveTo::getPointGoal(const boost::any& goal, const moveit::core::LinkModel* link,
                           const planning_scene::PlanningScenePtr& scene, Eigen::Isometry3d& target_eigen,
-                          decltype(std::declval<SolutionBase>().markers()) & /*unused*/) {
+                          decltype(std::declval<SolutionBase>().markers())& /*unused*/) {
 	try {
 		const geometry_msgs::PointStamped& target = boost::any_cast<geometry_msgs::PointStamped>(goal);
 		Eigen::Vector3d target_point;
@@ -239,13 +257,6 @@ bool MoveTo::compute(const InterfaceState& state, planning_scene::PlanningSceneP
 		if (dir == BACKWARD)
 			robot_trajectory->reverse();
 		solution.setTrajectory(robot_trajectory);
-
-		// set cost
-		double cost = 0;
-		for (const double& distance : robot_trajectory->getWayPointDurations()) {
-			cost += distance;
-		}
-		solution.setCost(cost);
 
 		if (!success)
 			solution.markAsFailure();
