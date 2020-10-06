@@ -7,6 +7,7 @@ add_library(${PROJECT_NAME}_stages
 	${PROJECT_INCLUDE}/stages/fixed_cartesian_poses.h
 	${PROJECT_INCLUDE}/stages/generate_pose.h
 	${PROJECT_INCLUDE}/stages/generate_grasp_pose.h
+	${PROJECT_INCLUDE}/stages/generate_custom_pose.h
 	${PROJECT_INCLUDE}/stages/generate_place_pose.h
 	${PROJECT_INCLUDE}/stages/compute_ik.h
 	${PROJECT_INCLUDE}/stages/predicate_filter.h
@@ -26,6 +27,7 @@ add_library(${PROJECT_NAME}_stages
 	fixed_cartesian_poses.cpp
 	generate_pose.cpp
 	generate_grasp_pose.cpp
+	generate_custom_pose.cpp
 	generate_place_pose.cpp
 	compute_ik.cpp
 	predicate_filter.cpp
