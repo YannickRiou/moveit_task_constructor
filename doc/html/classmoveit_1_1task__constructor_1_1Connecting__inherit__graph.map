@@ -1,0 +1,6 @@
+<map id="moveit::task_constructor::Connecting" name="moveit::task_constructor::Connecting">
+<area shape="rect" id="node4" href="$classConnectMockup.html" title="ConnectMockup" alt="" coords="30,281,147,307"/>
+<area shape="rect" id="node5" href="$classmoveit_1_1task__constructor_1_1stages_1_1Connect.html" title="moveit::task_constructor\l::stages::Connect" alt="" coords="171,273,337,315"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1ComputeBase.html" title="moveit::task_constructor\l::ComputeBase" alt="" coords="5,95,172,136"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="5,5,172,47"/>
+</map>

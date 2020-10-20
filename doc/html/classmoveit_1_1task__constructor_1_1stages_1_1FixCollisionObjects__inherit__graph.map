@@ -1,0 +1,5 @@
+<map id="moveit::task_constructor::stages::FixCollisionObjects" name="moveit::task_constructor::stages::FixCollisionObjects">
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1PropagatingEitherWay.html" title="moveit::task_constructor\l::PropagatingEitherWay" alt="" coords="17,184,184,225"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1ComputeBase.html" title="moveit::task_constructor\l::ComputeBase" alt="" coords="17,95,184,136"/>
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="17,5,184,47"/>
+</map>

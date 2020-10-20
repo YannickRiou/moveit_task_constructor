@@ -1,0 +1,7 @@
+<map id="moveit::task_constructor::stages::SimpleGraspBase" name="moveit::task_constructor::stages::SimpleGraspBase">
+<area shape="rect" id="node5" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleGrasp.html" title="specialization of SimpleGraspBase to realize grasping " alt="" coords="881,5,1048,47"/>
+<area shape="rect" id="node6" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleUnGrasp.html" title="specialization of SimpleGraspBase to realize ungrasping " alt="" coords="880,71,1049,112"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1SerialContainer.html" title="moveit::task_constructor\l::SerialContainer" alt="" coords="435,39,601,80"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1ContainerBase.html" title="moveit::task_constructor\l::ContainerBase" alt="" coords="220,39,387,80"/>
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="5,39,172,80"/>
+</map>

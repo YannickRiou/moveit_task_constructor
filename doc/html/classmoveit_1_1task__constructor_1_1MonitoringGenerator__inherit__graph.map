@@ -1,0 +1,10 @@
+<map id="moveit::task_constructor::MonitoringGenerator" name="moveit::task_constructor::MonitoringGenerator">
+<area shape="rect" id="node5" href="$classMonitoringGeneratorMockup.html" title="MonitoringGeneratorMockup" alt="" coords="873,5,1058,32"/>
+<area shape="rect" id="node6" href="$classmoveit_1_1task__constructor_1_1stages_1_1FixedCartesianPoses.html" title="moveit::task_constructor\l::stages::FixedCartesianPoses" alt="" coords="864,57,1067,98"/>
+<area shape="rect" id="node7" href="$classmoveit_1_1task__constructor_1_1stages_1_1GeneratePose.html" title="moveit::task_constructor\l::stages::GeneratePose" alt="" coords="882,122,1049,163"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1Generator.html" title="moveit::task_constructor\l::Generator" alt="" coords="435,57,601,98"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1ComputeBase.html" title="moveit::task_constructor\l::ComputeBase" alt="" coords="220,57,387,98"/>
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="5,57,172,98"/>
+<area shape="rect" id="node8" href="$classmoveit_1_1task__constructor_1_1stages_1_1GenerateGraspPose.html" title="moveit::task_constructor\l::stages::GenerateGraspPose" alt="" coords="1115,89,1309,130"/>
+<area shape="rect" id="node9" href="$classmoveit_1_1task__constructor_1_1stages_1_1GeneratePlacePose.html" title="moveit::task_constructor\l::stages::GeneratePlacePose" alt="" coords="1115,154,1309,195"/>
+</map>

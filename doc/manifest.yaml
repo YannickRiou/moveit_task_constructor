@@ -1,0 +1,25 @@
+actions: []
+authors: ''
+brief: ''
+bugtracker: ''
+depends:
+- moveit_core
+- catkin
+- roscpp
+- eigen_conversions
+- moveit_ros_planning
+- rostest
+- geometry_msgs
+- rosunit
+- visualization_msgs
+- moveit_task_constructor_msgs
+- moveit_ros_planning_interface
+- rviz_marker_tools
+description: MoveIt Task Pipeline
+license: BSD
+maintainers: Michael Goerner <me@v4hn.de>, Robert Haschke <rhaschke@techfak.uni-bielefeld.de>
+msgs: []
+package_type: package
+repo_url: ''
+srvs: []
+url: ''

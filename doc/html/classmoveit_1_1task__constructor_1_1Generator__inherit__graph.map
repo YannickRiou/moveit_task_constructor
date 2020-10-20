@@ -1,0 +1,14 @@
+<map id="moveit::task_constructor::Generator" name="moveit::task_constructor::Generator">
+<area shape="rect" id="node4" href="$classGeneratorMockup.html" title="GeneratorMockup" alt="" coords="670,31,795,57"/>
+<area shape="rect" id="node6" href="$classmoveit_1_1task__constructor_1_1MonitoringGenerator.html" title="moveit::task_constructor\l::MonitoringGenerator" alt="" coords="649,82,816,123"/>
+<area shape="rect" id="node12" href="$classmoveit_1_1task__constructor_1_1stages_1_1CurrentState.html" title="moveit::task_constructor\l::stages::CurrentState" alt="" coords="649,147,816,189"/>
+<area shape="rect" id="node13" href="$classmoveit_1_1task__constructor_1_1stages_1_1FixedState.html" title="moveit::task_constructor\l::stages::FixedState" alt="" coords="649,213,816,254"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1ComputeBase.html" title="moveit::task_constructor\l::ComputeBase" alt="" coords="220,82,387,123"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="5,82,172,123"/>
+<area shape="rect" id="node5" href="$classNamedStage.html" title="NamedStage" alt="" coords="916,5,1015,32"/>
+<area shape="rect" id="node7" href="$classMonitoringGeneratorMockup.html" title="MonitoringGeneratorMockup" alt="" coords="873,56,1058,83"/>
+<area shape="rect" id="node8" href="$classmoveit_1_1task__constructor_1_1stages_1_1FixedCartesianPoses.html" title="moveit::task_constructor\l::stages::FixedCartesianPoses" alt="" coords="864,107,1067,149"/>
+<area shape="rect" id="node9" href="$classmoveit_1_1task__constructor_1_1stages_1_1GeneratePose.html" title="moveit::task_constructor\l::stages::GeneratePose" alt="" coords="882,173,1049,214"/>
+<area shape="rect" id="node10" href="$classmoveit_1_1task__constructor_1_1stages_1_1GenerateGraspPose.html" title="moveit::task_constructor\l::stages::GenerateGraspPose" alt="" coords="1115,139,1309,181"/>
+<area shape="rect" id="node11" href="$classmoveit_1_1task__constructor_1_1stages_1_1GeneratePlacePose.html" title="moveit::task_constructor\l::stages::GeneratePlacePose" alt="" coords="1115,205,1309,246"/>
+</map>

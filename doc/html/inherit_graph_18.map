@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structmoveit_1_1task__constructor_1_1PropertySerializerBase.html" title="moveit::task_constructor\l::PropertySerializerBase\&lt; T \&gt;" alt="" coords="5,5,200,47"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1PropertySerializer.html" title="utility class to register serializer/deserializer functions for a property of type T ..." alt="" coords="248,5,415,47"/>
+</map>

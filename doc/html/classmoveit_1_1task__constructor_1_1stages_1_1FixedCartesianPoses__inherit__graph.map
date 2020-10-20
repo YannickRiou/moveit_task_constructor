@@ -1,0 +1,6 @@
+<map id="moveit::task_constructor::stages::FixedCartesianPoses" name="moveit::task_constructor::stages::FixedCartesianPoses">
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1MonitoringGenerator.html" title="moveit::task_constructor\l::MonitoringGenerator" alt="" coords="23,273,190,315"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1Generator.html" title="moveit::task_constructor\l::Generator" alt="" coords="23,184,190,225"/>
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1ComputeBase.html" title="moveit::task_constructor\l::ComputeBase" alt="" coords="23,95,190,136"/>
+<area shape="rect" id="node5" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="23,5,190,47"/>
+</map>

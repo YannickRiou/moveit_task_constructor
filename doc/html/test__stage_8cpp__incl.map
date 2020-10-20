@@ -1,0 +1,13 @@
+<map id="test_stage.cpp" name="test_stage.cpp">
+<area shape="rect" id="node2" href="$models_8h.html" title="models.h" alt="" coords="1053,370,1128,397"/>
+<area shape="rect" id="node4" href="$stage__p_8h.html" title="moveit/task_constructor\l/stage_p.h" alt="" coords="353,177,516,218"/>
+<area shape="rect" id="node31" href="$compute__ik_8h.html" title="moveit/task_constructor\l/stages/compute_ik.h" alt="" coords="681,80,844,121"/>
+<area shape="rect" id="node35" href="$modify__planning__scene_8h.html" title="moveit/task_constructor\l/stages/modify_planning\l_scene.h" alt="" coords="1296,169,1459,225"/>
+<area shape="rect" id="node5" href="$stage_8h.html" title="moveit/task_constructor\l/stage.h" alt="" coords="895,273,1057,315"/>
+<area shape="rect" id="node9" href="$storage_8h.html" title="moveit/task_constructor\l/storage.h" alt="" coords="697,363,860,404"/>
+<area shape="rect" id="node19" href="$cost__queue_8h.html" title="moveit/task_constructor\l/cost_queue.h" alt="" coords="123,452,285,493"/>
+<area shape="rect" id="node6" href="$utils_8h.html" title="utils.h" alt="" coords="1366,370,1423,397"/>
+<area shape="rect" id="node10" href="$properties_8h.html" title="moveit/task_constructor\l/properties.h" alt="" coords="1219,452,1381,493"/>
+<area shape="rect" id="node32" href="$container_8h.html" title="moveit/task_constructor\l/container.h" alt="" coords="681,177,844,218"/>
+<area shape="rect" id="node36" href="$type__traits_8h.html" title="moveit/task_constructor\l/type_traits.h" alt="" coords="1448,363,1611,404"/>
+</map>

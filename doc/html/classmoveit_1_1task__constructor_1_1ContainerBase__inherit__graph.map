@@ -1,0 +1,18 @@
+<map id="moveit::task_constructor::ContainerBase" name="moveit::task_constructor::ContainerBase">
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1ParallelContainerBase.html" title="moveit::task_constructor\l::ParallelContainerBase" alt="" coords="435,136,601,177"/>
+<area shape="rect" id="node11" href="$classmoveit_1_1task__constructor_1_1SerialContainer.html" title="moveit::task_constructor\l::SerialContainer" alt="" coords="435,332,601,373"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="5,235,172,276"/>
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1Alternatives.html" title="moveit::task_constructor\l::Alternatives" alt="" coords="657,5,824,47"/>
+<area shape="rect" id="node5" href="$classmoveit_1_1task__constructor_1_1Fallbacks.html" title="moveit::task_constructor\l::Fallbacks" alt="" coords="657,71,824,112"/>
+<area shape="rect" id="node6" href="$classmoveit_1_1task__constructor_1_1Merger.html" title="moveit::task_constructor\l::Merger" alt="" coords="657,136,824,177"/>
+<area shape="rect" id="node7" href="$classmoveit_1_1task__constructor_1_1WrapperBase.html" title="moveit::task_constructor\l::WrapperBase" alt="" coords="657,201,824,243"/>
+<area shape="rect" id="node8" href="$classmoveit_1_1task__constructor_1_1stages_1_1ComputeIK.html" title="moveit::task_constructor\l::stages::ComputeIK" alt="" coords="881,103,1048,144"/>
+<area shape="rect" id="node9" href="$classmoveit_1_1task__constructor_1_1stages_1_1PredicateFilter.html" title="moveit::task_constructor\l::stages::PredicateFilter" alt="" coords="881,168,1048,209"/>
+<area shape="rect" id="node10" href="$classmoveit_1_1task__constructor_1_1Task.html" title="moveit::task_constructor\l::Task" alt="" coords="881,233,1048,275"/>
+<area shape="rect" id="node12" href="$classmoveit_1_1task__constructor_1_1stages_1_1PickPlaceBase.html" title="moveit::task_constructor\l::stages::PickPlaceBase" alt="" coords="657,332,824,373"/>
+<area shape="rect" id="node15" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleGraspBase.html" title="moveit::task_constructor\l::stages::SimpleGraspBase" alt="" coords="649,429,832,471"/>
+<area shape="rect" id="node13" href="$classmoveit_1_1task__constructor_1_1stages_1_1Pick.html" title="specialization of PickPlaceBase to realize picking " alt="" coords="881,299,1048,340"/>
+<area shape="rect" id="node14" href="$classmoveit_1_1task__constructor_1_1stages_1_1Place.html" title="specialization of PickPlaceBase to realize placing " alt="" coords="881,364,1048,405"/>
+<area shape="rect" id="node16" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleGrasp.html" title="specialization of SimpleGraspBase to realize grasping " alt="" coords="881,429,1048,471"/>
+<area shape="rect" id="node17" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleUnGrasp.html" title="specialization of SimpleGraspBase to realize ungrasping " alt="" coords="880,495,1049,536"/>
+</map>

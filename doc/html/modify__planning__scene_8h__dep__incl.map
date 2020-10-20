@@ -1,0 +1,7 @@
+<map id="modify_planning_scene.h" name="modify_planning_scene.h">
+<area shape="rect" id="node2" href="$stages_8h.html" title="stages.h" alt="" coords="5,80,77,107"/>
+<area shape="rect" id="node3" href="$modify__planning__scene_8cpp.html" title="modify_planning_scene.cpp" alt="" coords="102,80,285,107"/>
+<area shape="rect" id="node4" href="$simple__grasp_8cpp.html" title="simple_grasp.cpp" alt="" coords="309,80,433,107"/>
+<area shape="rect" id="node5" href="$pick__pa10_8cpp.html" title="pick_pa10.cpp" alt="" coords="457,80,564,107"/>
+<area shape="rect" id="node6" href="$test__stage_8cpp.html" title="test_stage.cpp" alt="" coords="589,80,697,107"/>
+</map>

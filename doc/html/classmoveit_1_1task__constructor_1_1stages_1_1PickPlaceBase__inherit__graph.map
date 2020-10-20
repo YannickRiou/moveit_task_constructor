@@ -1,0 +1,7 @@
+<map id="moveit::task_constructor::stages::PickPlaceBase" name="moveit::task_constructor::stages::PickPlaceBase">
+<area shape="rect" id="node5" href="$classmoveit_1_1task__constructor_1_1stages_1_1Pick.html" title="specialization of PickPlaceBase to realize picking " alt="" coords="5,363,172,404"/>
+<area shape="rect" id="node6" href="$classmoveit_1_1task__constructor_1_1stages_1_1Place.html" title="specialization of PickPlaceBase to realize placing " alt="" coords="196,363,363,404"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1SerialContainer.html" title="moveit::task_constructor\l::SerialContainer" alt="" coords="100,184,267,225"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1ContainerBase.html" title="moveit::task_constructor\l::ContainerBase" alt="" coords="100,95,267,136"/>
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="100,5,267,47"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="moveit::task_constructor::SolutionBase" name="moveit::task_constructor::SolutionBase">
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1SolutionSequence.html" title="moveit::task_constructor\l::SolutionSequence" alt="" coords="220,5,387,47"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1SubTrajectory.html" title="SubTrajectory connects interface states of ComputeStages. " alt="" coords="220,71,387,112"/>
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1WrappedSolution.html" title="moveit::task_constructor\l::WrappedSolution" alt="" coords="220,136,387,177"/>
+</map>

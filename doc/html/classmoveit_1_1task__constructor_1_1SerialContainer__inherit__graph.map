@@ -1,0 +1,10 @@
+<map id="moveit::task_constructor::SerialContainer" name="moveit::task_constructor::SerialContainer">
+<area shape="rect" id="node4" href="$classmoveit_1_1task__constructor_1_1stages_1_1PickPlaceBase.html" title="moveit::task_constructor\l::stages::PickPlaceBase" alt="" coords="657,71,824,112"/>
+<area shape="rect" id="node7" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleGraspBase.html" title="moveit::task_constructor\l::stages::SimpleGraspBase" alt="" coords="649,136,832,177"/>
+<area shape="rect" id="node2" href="$classmoveit_1_1task__constructor_1_1ContainerBase.html" title="moveit::task_constructor\l::ContainerBase" alt="" coords="220,104,387,145"/>
+<area shape="rect" id="node3" href="$classmoveit_1_1task__constructor_1_1Stage.html" title="moveit::task_constructor\l::Stage" alt="" coords="5,104,172,145"/>
+<area shape="rect" id="node5" href="$classmoveit_1_1task__constructor_1_1stages_1_1Pick.html" title="specialization of PickPlaceBase to realize picking " alt="" coords="881,5,1048,47"/>
+<area shape="rect" id="node6" href="$classmoveit_1_1task__constructor_1_1stages_1_1Place.html" title="specialization of PickPlaceBase to realize placing " alt="" coords="881,71,1048,112"/>
+<area shape="rect" id="node8" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleGrasp.html" title="specialization of SimpleGraspBase to realize grasping " alt="" coords="881,136,1048,177"/>
+<area shape="rect" id="node9" href="$classmoveit_1_1task__constructor_1_1stages_1_1SimpleUnGrasp.html" title="specialization of SimpleGraspBase to realize ungrasping " alt="" coords="880,201,1049,243"/>
+</map>

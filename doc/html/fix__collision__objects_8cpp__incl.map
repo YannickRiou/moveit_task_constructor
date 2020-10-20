@@ -1,0 +1,8 @@
+<map id="fix_collision_objects.cpp" name="fix_collision_objects.cpp">
+<area shape="rect" id="node2" href="$fix__collision__objects_8h.html" title="moveit/task_constructor\l/stages/fix_collision\l_objects.h" alt="" coords="597,80,760,136"/>
+<area shape="rect" id="node3" href="$storage_8h.html" title="moveit/task_constructor\l/storage.h" alt="" coords="721,273,884,315"/>
+<area shape="rect" id="node23" href="$stage_8h.html" title="moveit/task_constructor\l/stage.h" alt="" coords="206,184,369,225"/>
+<area shape="rect" id="node5" href="$properties_8h.html" title="moveit/task_constructor\l/properties.h" alt="" coords="470,363,633,404"/>
+<area shape="rect" id="node14" href="$cost__queue_8h.html" title="moveit/task_constructor\l/cost_queue.h" alt="" coords="1297,363,1460,404"/>
+<area shape="rect" id="node24" href="$utils_8h.html" title="utils.h" alt="" coords="159,281,216,307"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="pick.h" name="pick.h">
+<area shape="rect" id="node3" href="$container_8h.html" title="moveit/task_constructor\l/container.h" alt="" coords="1337,80,1500,121"/>
+<area shape="rect" id="node4" href="$stage_8h.html" title="stage.h" alt="" coords="1362,169,1427,196"/>
+<area shape="rect" id="node5" href="$utils_8h.html" title="utils.h" alt="" coords="1511,251,1569,278"/>
+<area shape="rect" id="node8" href="$storage_8h.html" title="moveit/task_constructor\l/storage.h" alt="" coords="787,244,949,285"/>
+<area shape="rect" id="node9" href="$properties_8h.html" title="moveit/task_constructor\l/properties.h" alt="" coords="375,333,537,375"/>
+<area shape="rect" id="node18" href="$cost__queue_8h.html" title="moveit/task_constructor\l/cost_queue.h" alt="" coords="787,333,949,375"/>
+</map>
